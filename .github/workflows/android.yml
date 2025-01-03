@@ -21,6 +21,23 @@ jobs:
         cache: gradle
 
     - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
+      run: chmod +x./gradlew
     - name: Build with Gradle
-      run: ./gradlew build --warning-mode all
+      run:./gradlew build
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: my-app
+        path: app/build/outputs/apk/debug/app-debug.apk
+    - name: Download artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: my-app
+        path: app/build/outputs/apk/debug/app-debug.apk
+    - name: Upload to distribution channel
+      uses: actions/upload-to-distribution-channel@v1
+      with:
+        api-key: ${{ secrets.API_KEY }}
+        api-secret: ${{ secrets.API_SECRET }}
+        package-name: com.example.myapp
+        artifact-path: app/build/outputs/apk/debug/app-debug.apk
